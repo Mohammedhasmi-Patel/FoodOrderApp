@@ -1,33 +1,40 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+import { FoodData } from "../../constants";
 import RestaurantCards from "./RestaurantCards";
 
-async function getData() {
-  const data = await fetch(
-    "https://www.swiggy.com/dapi/restaurants/list/v5?lat=17.486463086305346&lng=78.3657343313098&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
-  );
-
-  const jsonData = await data.json();
-  return jsonData;
-}
-
 const Body = () => {
-  const [restaurants, setRestaurants] = useState([]);
+  const [userInput, setUserInput] = useState("");
+  const [filterData, setFilterData] = useState(FoodData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getData();
-      setRestaurants(data?.data?.cards);
-      console.log(...data?.data?.cards);
-    };
-    fetchData();
-  }, []);
+  function filterItems(filterData, userInput) {
+    const filterValue = filterData.filter((items) => {
+      return items.name.includes(userInput);
+    });
+    setFilterData(filterValue);
+  }
 
   return (
-    <div>
-      {restaurants.map((item) => {
-        <h1>item?.cards?.cards?.id</h1>;
-      })}
-    </div>
+    <>
+      <div className="flex items-center justify-center">
+        <input
+          type="text"
+          placeholder="Search Item Here"
+          className="w-72 h-12 border border-black text-center"
+          onChange={(e) => setUserInput(e.target.value)}
+        />
+        <button
+          className="p-5 rounded-lg m-5 bg-green-400 text-white "
+          onClick={() => filterItems(filterData, userInput)}
+        >
+          Search
+        </button>
+      </div>
+      <div className="flex flex-wrap">
+        {filterData.map((item) => {
+          return <RestaurantCards item={item} />;
+        })}
+      </div>
+    </>
   );
 };
 
